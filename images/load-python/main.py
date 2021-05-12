@@ -3,7 +3,6 @@
 solution with denormalized(original shape) tables
 """
 import csv
-import json
 import sqlalchemy
 from sqlalchemy import Table, Column, VARCHAR, Integer, Date
 
@@ -81,16 +80,6 @@ def writer(path, table, sample_size=None, conn=connection):
     return None
 
 
-# query string to count number of instances per group
-summary_query = """
-    select pl.`country`, count(*) as n_of_births
-    from people as pp
-    left join places as pl
-    on pp.place_of_birth = pl.city
-    group by pl.country
-    ;
-"""
-
 if __name__ == "__main__":
     # drop tables to create new one's later
     connection.execute("drop tables if exists people, places;")
@@ -103,14 +92,6 @@ if __name__ == "__main__":
     # insert values
     writer('../../data/people.csv', people, sample_size=200, conn=connection)
     writer('../../data/places.csv', places, sample_size=None, conn=connection)
-
-    # execute summary query
-    output = connection.execute(summary_query)
-
-    # write as output.json {country:count}
-    with open('../../data/summary_output.json', 'w') as f:
-        rows = [{row[0]: row[1]} for row in output]
-        json.dump(rows, f, separators=(',', ':'))
 
     # with open("./schema.sql", 'r') as s:
     #     q = s.read()

@@ -14,8 +14,14 @@ services:
       - "3306:3306"
     restart: always
 
-  example-python:
-    image: example-python
-    build: images/example-python
+  load-python:
+    image: load-python
+    build: images/load-python
+    volumes:
+      - ./data:/data
+
+  summary-python:
+    image: summary-python
+    build: images/summary-python
     volumes:
       - ./data:/data
